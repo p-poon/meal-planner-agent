@@ -1,0 +1,41 @@
+# ----------------------------------------------------------------------
+# Project-Specific Exclusions
+# ----------------------------------------------------------------------
+
+# 1. Environment Variables (Critical for security!)
+# This keeps your GEMINI_API_KEY secure.
+.env
+
+# 2. Python bytecode files
+*.pyc
+__pycache__/
+
+# 3. Virtual Environment
+# The virtual environment folder created by 'python -m venv venv'
+venv/
+.venv/
+
+# 4. Compiled output
+*.o
+*.so
+
+# ----------------------------------------------------------------------
+# Operating System & Editor Exclusions
+# ----------------------------------------------------------------------
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Visual Studio Code
+.vscode/
+
+# Jupyter/Python Development
+.ipynb_checkpoints
+
+# Build directories for package distributions
+dist/
+build/
