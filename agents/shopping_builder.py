@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, List, Tuple
 
 class ShoppingListBuilderAgent:
@@ -5,7 +6,7 @@ class ShoppingListBuilderAgent:
     Agent responsible for generating a consolidated shopping list from a meal plan.
     """
     def __init__(self):
-        print("Shopping List Agent initialized.")
+        logging.info("Shopping List Agent initialized.")
 
     def generate_shopping_list(self, meal_plan: Dict) -> Dict[str, List[str]]:
         """
@@ -14,7 +15,7 @@ class ShoppingListBuilderAgent:
         Returns a dictionary: { "Dish Name": ["Ingredient 1", "Ingredient 2", ...] }
         """
         if not meal_plan:
-            print("Cannot generate shopping list: Meal plan is empty or failed to generate.")
+            logging.info("Cannot generate shopping list: Meal plan is empty or failed to generate.")
             return {}
             
         # New structure to hold ingredients grouped by dish
@@ -73,6 +74,6 @@ class ShoppingListBuilderAgent:
     def export_list_to_anylist(self, shopping_list: List[str]):
         """Placeholder method for AnyList shopping list integration."""
         if shopping_list:
-            print("\n[Integration Placeholder] Shopping list data ready for AnyList export (via external API call).")
+            logging.info("\n[Integration Placeholder] Shopping list data ready for AnyList export (via external API call).")
 
 # This is just a class file, so the main execution block is removed here.

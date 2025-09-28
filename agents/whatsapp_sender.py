@@ -1,4 +1,5 @@
 import os
+import logging
 from twilio.rest import Client
 from typing import List, Dict
 
@@ -14,14 +15,14 @@ class WhatsAppSenderAgent:
         self.whatsapp_to_number = os.getenv("WHATSAPP_GROUP_ID") # The recipient's number (e.g., whatsapp:+6591234567)
 
         if not all([self.account_sid, self.auth_token, self.whatsapp_from_number, self.whatsapp_to_number]):
-            print("WARNING: Twilio credentials or phone numbers are missing from .env. WhatsApp integration is disabled.")
+            logging.info("WARNING: Twilio credentials or phone numbers are missing from .env. WhatsApp integration is disabled.")
             self.client = None
         else:
             try:
                 self.client = Client(self.account_sid, self.auth_token)
-                print("WhatsApp Sender Agent initialized (via Twilio).")
+                logging.info("WhatsApp Sender Agent initialized (via Twilio).")
             except Exception as e:
-                print(f"ERROR: Failed to initialize Twilio client: {e}")
+                logging.info(f"ERROR: Failed to initialize Twilio client: {e}")
                 self.client = None
 
     def build_message_body(self, meal_plan: Dict, grouped_shopping_list: Dict[str, List[str]]) -> str:
@@ -69,9 +70,9 @@ class WhatsAppSenderAgent:
                 to=self.whatsapp_to_number,
                 body=message_body
             )
-            print(f"\n✅ WhatsApp message sent successfully! SID: {message.sid}")
-            print(f"   Check status: https://www.twilio.com/console/sms/{message.sid}")
+            logging.info(f"\n✅ WhatsApp message sent successfully! SID: {message.sid}")
+            logging.info(f"   Check status: https://www.twilio.com/console/sms/{message.sid}")
 
         except Exception as e:
-            print(f"\n❌ ERROR sending WhatsApp message: {e}")
-            print("   (Ensure the recipient has joined your Twilio Sandbox by sending 'join <code>'.)")
+            logging.info(f"\n❌ ERROR sending WhatsApp message: {e}")
+            logging.info("   (Ensure the recipient has joined your Twilio Sandbox by sending 'join <code>'.)")
