@@ -56,10 +56,13 @@ class MealPlanCreatorAgent:
                 "ingredients": types.Schema(
                     type=types.Type.ARRAY, 
                     items=types.Schema(type=types.Type.STRING), 
-                    description=f"List of ingredients with quantities suitable for {self.family_size} people."
-                )
+                    description=f"List of ingredients with quantities suitable for {self.family_size} people."),
+                "instructions": types.Schema(type=types.Type.STRING, 
+                    description="Step-by-step, brief cooking instructions for the dish."),
+                "youtube_link": types.Schema(type=types.Type.STRING, 
+                    description="A relevant, working YouTube link for the recipe (must be a full URL).")
             },
-            required=["dish", "ingredients"]
+            required=["dish", "ingredients","instructions","youtube_link"]
         )
         
         # 2. Define the overall meal plan schema for 7 days
@@ -88,6 +91,7 @@ class MealPlanCreatorAgent:
             "1. **Monday Breakfast** must be 'Ham and Cheese Sandwich'. "
             "2. **Wednesday Breakfast** must be 'Steamed Pau'. "
             "3. All other breakfasts should be simple, non-soup, fast-cooking options (e.g., soft boiled eggs, toast, congee)."
+            "**4. Provide simple step-by-step cooking instructions and include a direct, relevant YouTube link for each dish.**" 
             "ONLY respond with a valid, clean JSON object that strictly adheres to the provided schema. "
             "Do not include any explanations, greetings, or formatting outside the JSON."
         )
@@ -95,7 +99,7 @@ class MealPlanCreatorAgent:
         prompt = (
             f"Generate a 7-day family meal plan. The user has the following preferences/restrictions: '{user_prefs}'. "
             "Ensure the plan strictly follows the mandatory Monday (Ham/Cheese Sandwich) and Wednesday (Steamed Pau) breakfasts, "
-            "and all dinners include a traditional Singaporean Chinese soup."
+            "and all dinners include a traditional Singaporean Chinese soup. **For every dish, include concise cooking steps and a YouTube video URL for the recipe.**"
         )
         
         # 4. Configure the generation request for JSON output

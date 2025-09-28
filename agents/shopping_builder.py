@@ -56,17 +56,39 @@ class ShoppingListBuilderAgent:
             formatted_list += f"\n🍜 **{dish}**:\n"
             for item in ingredients:
                 # Indent ingredients for readability
-                formatted_list += f"  - {item}\n"
+                formatted_list += f"    • {item}\n"
 
-        # 2. Add an optional section for fully consolidated items (helpful for shopping flow)
+        # 2. Generate and Clean Final Consolidated List (FIX STARTS HERE)
         all_ingredients = []
         for ingredients in grouped_list.values():
             all_ingredients.extend(ingredients)
         
+        # Deduplicate to get unique required items
         unique_items = sorted(list(set(all_ingredients)))
         
-        formatted_list += "\n--- Total Unique Items to Buy ---\n"
-        for i, item in enumerate(unique_items, 1):
+        # Filter out obvious recipe titles or duplicate instructions that Gemini might have added
+        # A simple check: items that contain the string 'Sauce:' or the character ':' are often recipe notes
+        
+        clean_total_list = []
+        for item in unique_items:
+            # We want to remove any item that looks like a recipe title or a large, multi-item description.
+            # Items containing 'Sauce:' or that are too long (e.g., > 10 words) are suspicious.
+            # We will use a conservative heuristic to clean the list:
+            if ':' not in item and len(item.split()) < 10 and 'Soup:' not in item and 'Dish:' not in item:
+                clean_total_list.append(item)
+        
+        
+        formatted_list += "\n\n--- CONSOLIDATED TOTALS (For Shopping Cart) ---\n"
+        
+        # If the cleaning logic removed everything, display a simpler list.
+        if not clean_total_list:
+             # If the cleaning was too aggressive, fall back to the simple unique list
+            final_list = unique_items
+        else:
+            final_list = clean_total_list
+
+
+        for i, item in enumerate(final_list, 1):
             formatted_list += f"{i}. {item}\n"
         
         return formatted_list

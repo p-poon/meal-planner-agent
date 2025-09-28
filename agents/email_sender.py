@@ -31,12 +31,31 @@ class EmailSenderAgent:
         
         # 1. Format Meal Plan
         meal_plan_text = "🍽️ WEEKLY MEAL PLAN (Singaporean Chinese Family of 5) 🍽️\n\n"
+
         for day, meals in meal_plan.items():
-            breakfast = meals.get("Breakfast", {}).get("dish", "N/A")
-            dinner = meals.get("Dinner", {}).get("dish", "N/A")
+            meal_plan_text += f"================================\n"
             meal_plan_text += f"📅 {day}:\n"
-            meal_plan_text += f"   - Breakfast: {breakfast}\n"
-            meal_plan_text += f"   - Dinner: {dinner}\n"
+            
+            # Helper to format each meal type
+            def format_meal_details(meal_type: str, details: Dict) -> str:
+                dish = details.get("dish", "N/A")
+                instructions = details.get("instructions", "No instructions available.")
+                link = details.get("youtube_link", "No link provided.")
+                
+                output = f"   - {meal_type} Dish: {dish}\n"
+                output += f"     * Instructions: {instructions}\n"
+                output += f"     * Video Link: {link}\n"
+                return output
+
+            # Add Breakfast details
+            breakfast_details = meals.get("Breakfast", {})
+            meal_plan_text += format_meal_details("Breakfast", breakfast_details)
+
+            # Add Dinner details
+            dinner_details = meals.get("Dinner", {})
+            meal_plan_text += format_meal_details("Dinner", dinner_details)
+
+        meal_plan_text += "================================\n"
         
         # 2. Format Grouped Shopping List (NEW STRUCTURE)
         shopping_list_text = "\n\n🛒 SHOPPING LIST BY DISH 🛒\n"
