@@ -23,6 +23,24 @@ class EmailSenderAgent:
         else:
             self.is_configured = True
             print("Email Sender Agent initialized.")
+
+    def _format_instructions_by_sentence(self, instructions: str) -> str:
+        """
+        Splits a block of text into one sentence per line for readability.
+        Uses a regex to find sentence-ending punctuation followed by a space.
+        """
+        import re
+        if not instructions:
+            return "No instructions available."
+            
+        # Regex looks for '.', '!', or '?' followed by optional quotes/spaces, and replaces it with the punctuation and a newline.
+        # This is a robust way to split sentences in a block of text.
+        sentences = re.sub(r'([.?!])\s+(?=["A-Z0-9\n])', r'\1\n', instructions).strip()
+        
+        # Add a bullet point to each line for a list format
+        bulleted_sentences = [f"        - {line.strip()}" for line in sentences.split('\n') if line.strip()]
+
+        return '\n'.join(bulleted_sentences)
     
     def build_message_body(self, meal_plan: Dict, grouped_shopping_list: Dict[str, List[str]]) -> str:
         """
@@ -36,29 +54,22 @@ class EmailSenderAgent:
             meal_plan_text += f"================================\n"
             meal_plan_text += f"📅 {day}:\n"
             
-            # Helper to format each meal type
-            def format_meal_details(meal_type: str, details: Dict) -> str:
+            # Re-implementing meal detail formatting directly
+            for meal_type in ["Breakfast", "Dinner"]:
+                details = meals.get(meal_type, {})
                 dish = details.get("dish", "N/A")
-                instructions = details.get("instructions", "No instructions available.")
-                link = details.get("youtube_link", "No link provided.")
+                instructions_raw = details.get("instructions", "No instructions available.")
                 
-                output = f"   - {meal_type} Dish: {dish}\n"
-                output += f"     * Instructions: {instructions}\n"
-                output += f"     * Video Link: {link}\n"
-                return output
-
-            # Add Breakfast details
-            breakfast_details = meals.get("Breakfast", {})
-            meal_plan_text += format_meal_details("Breakfast", breakfast_details)
-
-            # Add Dinner details
-            dinner_details = meals.get("Dinner", {})
-            meal_plan_text += format_meal_details("Dinner", dinner_details)
+                # --- NEW STEP: Format instructions ---
+                instructions_formatted = self._format_instructions_by_sentence(instructions_raw)
+                
+                meal_plan_text += f"   - {meal_type} Dish: {dish}\n"
+                meal_plan_text += f"     * Instructions:\n{instructions_formatted}\n" # <-- Inject formatted instructions
 
         meal_plan_text += "================================\n"
         
         # 2. Format Grouped Shopping List (NEW STRUCTURE)
-        shopping_list_text = "\n\n🛒 SHOPPING LIST BY DISH 🛒\n"
+        shopping_list_text = "\n\n🛒 **FINAL SHOPPING LIST**  🛒\n"
         
         for dish, ingredients in grouped_shopping_list.items():
             shopping_list_text += f"\n🍜 {dish} Ingredients:\n"
