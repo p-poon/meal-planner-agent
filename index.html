@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ Gemini Meal Planner Agent</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .input-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .input-section textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 15px;
+        }
+        .input-section button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        .input-section button:hover {
+            background-color: #45a049;
+        }
+        .results-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ccc;
+        }
+        .results-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .results-content {
+            white-space: pre-wrap; /* Preserves newline characters for formatted output */
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .placeholder {
+            text-align: center;
+            color: #888;
+            padding: 50px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🍽️ Singaporean Meal Planner Agent</h1>
+
+        <div class="input-section">
+            <label for="preferences">Enter Preferred Dishes, Allergies, or Dietary Goals (e.g., 'no pork, high fiber'):</label>
+            <textarea id="preferences" rows="5" placeholder="Tofu, Salmon, no chili, focus on vegetables..."></textarea>
+            
+            <button onclick="submitPreferences()">Generate Meal Plan</button>
+        </div>
+
+        <div class="results-section">
+            <h2>Generated Plan & Shopping List</h2>
+            
+            <div id="results" class="placeholder">
+                Plan will appear here after generation (requires backend integration).
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function submitPreferences() {
+            const preferences = document.getElementById('preferences').value;
+            const resultsDiv = document.getElementById('results');
+            
+            // --- FRONT-END SIMULATION ---
+            // In a real application, this is where you would make an HTTP request (POST)
+            // to your Python/Flask server, sending the 'preferences' data.
+            
+            resultsDiv.classList.remove('placeholder');
+            resultsDiv.innerHTML = '<p style="text-align: center;">... Agent is running (Calling Gemini API) ...</p>';
+
+            // Simulate the backend process and display a friendly message.
+            setTimeout(() => {
+                const simulatedOutput = 
+                    "--- Agent System Started ---\n" +
+                    "✅ User Preferences Logged: '" + preferences + "'\n" +
+                    "\n🤖 [Backend Simulation: Meal Plan Generated]\n" +
+                    "================================\n" +
+                    "📅 Monday:\n" +
+                    "   - Breakfast Dish: Ham and Cheese Sandwich\n" +
+                    "     * Instructions: Prepare sandwich.\n" +
+                    "   - Dinner Dish: Pork Ribs with Daikon Soup\n" +
+                    "     * Instructions: Braise pork ribs for 2 hours with daikon and ginger.\n" +
+                    "================================\n" +
+                    "\n🛒 FINAL SHOPPING LIST 🛒\n" +
+                    "--------------------------\n" +
+                    "✅ ITEMS TO BUY (Grouped by Dish):\n" +
+                    "\n  🍜 Pork Ribs with Daikon Soup:\n" +
+                    "    • Pork Ribs (500g)\n" +
+                    "    • Daikon (1 large)\n" +
+                    "\n🏠 ITEMS ALREADY IN STOCK (Do Not Buy):\n" +
+                    "  - Salt\n" +
+                    "  - Pepper\n";
+
+                resultsDiv.innerHTML = `<div class="results-content">${simulatedOutput}</div>`;
+                
+                // --- INTEGRATION NOTE ---
+                // If using Flask, the response.text from your Python route would replace 'simulatedOutput' here.
+
+            }, 3000); // Simulate a 3-second API call
+        }
+    </script>
+
+</body>
+</html>
