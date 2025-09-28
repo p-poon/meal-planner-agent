@@ -110,42 +110,37 @@
             const preferences = document.getElementById('preferences').value;
             const resultsDiv = document.getElementById('results');
             
-            // --- FRONT-END SIMULATION ---
-            // In a real application, this is where you would make an HTTP request (POST)
-            // to your Python/Flask server, sending the 'preferences' data.
-            
             resultsDiv.classList.remove('placeholder');
-            resultsDiv.innerHTML = '<p style="text-align: center;">... Agent is running (Calling Gemini API) ...</p>';
+            resultsDiv.innerHTML = '<p style="text-align: center; color: #4CAF50;">... Agent is running (Calling Gemini API) ...</p>';
 
-            // Simulate the backend process and display a friendly message.
-            setTimeout(() => {
-                const simulatedOutput = 
-                    "--- Agent System Started ---\n" +
-                    "✅ User Preferences Logged: '" + preferences + "'\n" +
-                    "\n🤖 [Backend Simulation: Meal Plan Generated]\n" +
-                    "================================\n" +
-                    "📅 Monday:\n" +
-                    "   - Breakfast Dish: Ham and Cheese Sandwich\n" +
-                    "     * Instructions: Prepare sandwich.\n" +
-                    "   - Dinner Dish: Pork Ribs with Daikon Soup\n" +
-                    "     * Instructions: Braise pork ribs for 2 hours with daikon and ginger.\n" +
-                    "================================\n" +
-                    "\n🛒 FINAL SHOPPING LIST 🛒\n" +
-                    "--------------------------\n" +
-                    "✅ ITEMS TO BUY (Grouped by Dish):\n" +
-                    "\n  🍜 Pork Ribs with Daikon Soup:\n" +
-                    "    • Pork Ribs (500g)\n" +
-                    "    • Daikon (1 large)\n" +
-                    "\n🏠 ITEMS ALREADY IN STOCK (Do Not Buy):\n" +
-                    "  - Salt\n" +
-                    "  - Pepper\n";
-
-                resultsDiv.innerHTML = `<div class="results-content">${simulatedOutput}</div>`;
-                
-                // --- INTEGRATION NOTE ---
-                // If using Flask, the response.text from your Python route would replace 'simulatedOutput' here.
-
-            }, 3000); // Simulate a 3-second API call
+            // Send the user input to the Flask server via API
+            fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // Send the preferences in a JSON body
+                body: JSON.stringify({ preferences: preferences })
+            })
+            .then(response => {
+                // If the request failed, handle the error code (e.g., 500)
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Display the results returned from the Python agent
+                if (data.status === 'success') {
+                    resultsDiv.innerHTML = `<div class="results-content">${data.log}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `<div class="results-content" style="color: red;">ERROR: ${data.error}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                resultsDiv.innerHTML = `<div class="results-content" style="color: red;">Connection Error. Check your Flask server and console logs.</div>`;
+            });
         }
     </script>
 
