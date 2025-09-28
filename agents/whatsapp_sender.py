@@ -24,24 +24,39 @@ class WhatsAppSenderAgent:
                 print(f"ERROR: Failed to initialize Twilio client: {e}")
                 self.client = None
 
-    def build_message_body(self, meal_plan: Dict, shopping_list: List[str]) -> str:
-        """Formats the meal plan and shopping list into a single, readable message."""
+    def build_message_body(self, meal_plan: Dict, grouped_shopping_list: Dict[str, List[str]]) -> str:
+        """Formats the meal plan and grouped shopping list into a single, readable message."""
         
-        # 1. Format Meal Plan
+        # 1. Format Meal Plan (This remains the same)
         meal_plan_text = "🍽️ WEEKLY MEAL PLAN (Family of 5) 🍽️\n"
         for day, meals in meal_plan.items():
             breakfast = meals.get("Breakfast", {}).get("dish", "N/A")
             dinner = meals.get("Dinner", {}).get("dish", "N/A")
-            meal_plan_text += f"**{day}**: B: {breakfast} | D: {dinner}\n"
+            meal_plan_text += f"*{day}*: B: {breakfast} | D: {dinner}\n" # Using * for bold/italics
         
-        # 2. Format Shopping List
-        shopping_list_text = "\n🛒 CONSOLIDATED SHOPPING LIST 🛒\n"
-        for i, item in enumerate(shopping_list, 1):
-            shopping_list_text += f"{i}. {item}\n"
+        # 2. Format Grouped Shopping List (NEW LOGIC)
+        shopping_list_text = "\n🛒 SHOPPING LIST BY DISH 🛒\n"
+        
+        for dish, ingredients in grouped_shopping_list.items():
+            # Bold the dish name
+            shopping_list_text += f"\n*{dish}*:\n" 
+            for item in ingredients:
+                # Use standard WhatsApp markdown for bullet points
+                shopping_list_text += f"  - {item}\n" 
+
+        # 3. Add Final Consolidated List (Optional but helpful)
+        all_ingredients = []
+        for ingredients in grouped_shopping_list.values():
+            all_ingredients.extend(ingredients)
+        unique_items = sorted(list(set(all_ingredients)))
+
+        shopping_list_text += "\n--- CONSOLIDATED TOTALS ---\n"
+        for i, item in enumerate(unique_items, 1):
+            shopping_list_text += f"• {item}\n"
         
         return meal_plan_text + "\n" + shopping_list_text
 
-    def send_plan(self, meal_plan: Dict, shopping_list: List[str]):
+    def send_plan(self, meal_plan: Dict, shopping_list: Dict[str, List[str]]): # <--- Note: Type hint update for shopping_list
         """Builds the message and sends it via the Twilio API."""
         if not self.client:
             return
